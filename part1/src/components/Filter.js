@@ -5,7 +5,7 @@ const Filter = ({onChange, value}) => {
           <input
             onChange={onChange}
             value={value}
-        />
+          />
       </div>
   )
 }
