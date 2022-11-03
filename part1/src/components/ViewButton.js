@@ -3,7 +3,6 @@ import Country from "./Country"
 
 const ViewButton = ({country}) => {
     const [showView, setView] = useState(false)
-    console.log('country', country)
 
     if (showView){
         return (
