@@ -29,7 +29,7 @@ const Languages = ({languages}) => {
 const Weather = ({country}) => {
   const [countryWeather, setWeather] = useState({})
 
-  const api_key = 'b90cd8e993e3e0b5b42bdca7ed78f7af'
+  const api_key = process.env.REACT_APP_API_KEY
   const lat = country.latlng[0]
   const long = country.latlng[1]
   useEffect(() => {
