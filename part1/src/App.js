@@ -5,6 +5,7 @@ import PersonForm from './components/PersonForm'
 import Numbers from './components/Numbers'
 import Persons from './components/Persons'
 import Filter from './components/Filter'
+import contactService from './services/contacts'
 
 const App = () => {
   const [persons, setPersons] = useState([])
@@ -14,13 +15,11 @@ const App = () => {
 
   useEffect(() => {
     console.log('effect')
-    axios
-      .get('http://localhost:3001/persons')
-      .then(response => {
-        console.log(response)
-        setPersons(response.data)
+    contactService.getAll()
+    .then(initialContacts => {
+      setPersons(initialContacts)
       })
-  },[])
+    },[])
 
   const namesToShow = persons.filter(person => person.name.includes(filter))
 
@@ -36,19 +35,38 @@ const App = () => {
     setNewNumber(event.target.value)
   }
 
+  const handleDelete = id => {
+    const contact = persons.find(person => person.id == id)
+    if (window.confirm(`Really delete ${contact.name}?`)){
+      contactService.deleteContact(id)
+      .then(response => setPersons(persons.filter(person => person.id != id)))
+      .catch(exception => {
+        alert(`The contact ${contact.name} has already been deleted!`)
+        setPersons(persons.filter(person => person.id != id))
+      })
+    }
+
+  }
   const handleSubmit = (event) => {
     event.preventDefault()
 
     const nameObj = {
       name : newName,
-      number: newNumber
+      number: newNumber,
+      id: persons.length+1
     }
 
     if (nameExists()){
       alert(`${newName} is already in the phonebook`)
     }
     else {
-      setPersons(persons.concat(nameObj))
+      contactService.addContact(nameObj)
+      .then(returnedContact => {
+        setPersons(persons.concat(returnedContact))
+        setNewName('')
+        setNewNumber('')
+      })
+
     }
 
   }
@@ -74,12 +92,10 @@ const App = () => {
             onChange={handleNameInput}
             value={newName}
           />
-          <br></br>
           <Numbers
             onChange={handleNumberInput}
             value={newNumber}
           />
-          <div>debug: {newName}</div>
         </div>
         <div>
           <button type="submit">add</button>
@@ -87,7 +103,7 @@ const App = () => {
       </form>
       <h2>Numbers</h2>
       <ul>
-        <Persons persons={namesToShow} />
+        <Persons persons={namesToShow} handleDelete={handleDelete} />
       </ul>
     </div>
   )
