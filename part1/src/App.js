@@ -53,11 +53,26 @@ const App = () => {
     const nameObj = {
       name : newName,
       number: newNumber,
-      id: persons.length+1
+      id: Date.now()
     }
 
     if (nameExists()){
-      alert(`${newName} is already in the phonebook`)
+      let updatedContact = {}
+      if (window.confirm('This contact already exists. Update their number?')) {
+        for (const person of persons) {
+          if (person.name === newName) {
+            updatedContact = {...person, number: newNumber}
+            console.log('contact update!')
+            console.log(updatedContact)
+          }
+        }
+        contactService.updateContact(updatedContact)
+        .then(returnedContact => {
+          setPersons(persons.map(person => person.id === returnedContact.id ? returnedContact : person ))
+          setNewName('')
+          setNewNumber('')
+        })
+      }
     }
     else {
       contactService.addContact(nameObj)
@@ -66,9 +81,7 @@ const App = () => {
         setNewName('')
         setNewNumber('')
       })
-
     }
-
   }
 
   const nameExists = () => {
