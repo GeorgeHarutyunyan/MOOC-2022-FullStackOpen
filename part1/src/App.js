@@ -14,7 +14,6 @@ const App = () => {
   const [filter, setFilter] = useState('')
 
   useEffect(() => {
-    console.log('effect')
     contactService.getAll()
     .then(initialContacts => {
       setPersons(initialContacts)
@@ -62,7 +61,6 @@ const App = () => {
         for (const person of persons) {
           if (person.name === newName) {
             updatedContact = {...person, number: newNumber}
-            console.log('contact update!')
             console.log(updatedContact)
           }
         }
