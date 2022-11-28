@@ -5,6 +5,7 @@ import PersonForm from './components/PersonForm'
 import Numbers from './components/Numbers'
 import Persons from './components/Persons'
 import Filter from './components/Filter'
+import Notification from './components/Notification'
 import contactService from './services/contacts'
 
 const App = () => {
@@ -12,6 +13,7 @@ const App = () => {
   const [newName, setNewName] = useState('')
   const [newNumber, setNewNumber] = useState('')
   const [filter, setFilter] = useState('')
+  const [notification, setNotification] = useState(null)
 
   useEffect(() => {
     contactService.getAll()
@@ -38,7 +40,12 @@ const App = () => {
     const contact = persons.find(person => person.id == id)
     if (window.confirm(`Really delete ${contact.name}?`)){
       contactService.deleteContact(id)
-      .then(response => setPersons(persons.filter(person => person.id != id)))
+      .then(response => {
+        setPersons(persons.filter(person => person.id != id))
+        setNotification(`${contact.name} deleted from phonebook.`)
+        setTimeout(() => setNotification(null), 5000)
+        
+        })
       .catch(exception => {
         alert(`The contact ${contact.name} has already been deleted!`)
         setPersons(persons.filter(person => person.id != id))
@@ -61,7 +68,6 @@ const App = () => {
         for (const person of persons) {
           if (person.name === newName) {
             updatedContact = {...person, number: newNumber}
-            console.log(updatedContact)
           }
         }
         contactService.updateContact(updatedContact)
@@ -69,6 +75,8 @@ const App = () => {
           setPersons(persons.map(person => person.id === returnedContact.id ? returnedContact : person ))
           setNewName('')
           setNewNumber('')
+          setNotification(`Contact ${updatedContact.name}'s number updated.`) 
+          setTimeout(() => setNotification(null) , 5000)
         })
       }
     }
@@ -78,6 +86,8 @@ const App = () => {
         setPersons(persons.concat(returnedContact))
         setNewName('')
         setNewNumber('')
+        setNotification(`${returnedContact.name} added to phonebook.`)
+        setTimeout(() => setNotification(null) , 5000)
       })
     }
   }
@@ -95,6 +105,7 @@ const App = () => {
   return (
     <div>
       <h2>Phonebook</h2>
+        <Notification message={notification} />
         <Filter onChange={handleFilterInput} value={filter}/>
       <h2>Add a new number:</h2>
       <form onSubmit={handleSubmit}>

@@ -12,8 +12,7 @@ const addContact = (contactObject) => {
     return request.then(response => response.data)
     }
 
-const deleteContact = id => {
-    console.log('In service id:',id)
+const deleteContact = (id) => {
     const request = axios.delete(`${baseURL}/${id}`)
     return request.then(response => response.data)
 }
